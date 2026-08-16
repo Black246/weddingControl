@@ -1,0 +1,257 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ wedding.couple_names }} · Invitación</title><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet"><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"><link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
+<style>
+  /* Mejora de visibilidad del nombre sobre el video */
+  .hero.has-video .guest-name-highlight {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 0.9rem 2.2rem;
+    border-radius: 60px;
+    display: inline-block;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.03em;
+    margin-top: 0.5rem;
+    font-family: "Playfair Display", Georgia, serif;
+  }
+  
+  .hero.has-video .guest-welcome {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+    margin-top: 0.3rem;
+  }
+  
+  .hero.has-video .hero-content h1 {
+    text-shadow: 0 2px 40px rgba(0, 0, 0, 0.6);
+  }
+  
+  .hero.has-video .hero-kicker {
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.4);
+  }
+  
+  .hero.has-video .eyebrow {
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Fecha más visible en la sección */
+  .invite-section .fecha-destacada {
+    background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+    color: #ffffff;
+    display: inline-block;
+    padding: 0.4rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 4px 20px rgba(183, 144, 75, 0.3);
+  }
+  
+  .invite-section .fecha-completa {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--gold-dark);
+    font-family: "Playfair Display", Georgia, serif;
+  }
+  
+  .invite-section .hora-evento {
+    color: #6d685f;
+    font-size: 1.1rem;
+  }
+  
+  @media (max-width: 600px) {
+    .hero.has-video .guest-name-highlight {
+      font-size: 1.1rem;
+      padding: 0.6rem 1.4rem;
+    }
+    .invite-section .fecha-completa {
+      font-size: 1.1rem;
+    }
+  }
+</style>
+</head>
+<body class="wedding-page"><main>
+<section class="hero{% if wedding.hero_video %} has-video{% endif %}">
+  {% if wedding.hero_video %}
+  <video class="hero-video" autoplay muted loop playsinline poster="{{ url_for('static', filename='images/hero-fallback.jpg') }}">
+    <source src="{{ url_for('web.media', filename=wedding.hero_video) }}">
+  </video>
+  <div class="hero-overlay"></div>
+  {% endif %}
+  <div class="hero-content">
+    <p class="eyebrow">{{ wedding.title }}</p>
+    <p class="hero-kicker">Nos casamos</p>
+    <h1>{{ wedding.couple_names }}</h1>
+    <div class="guest-name-highlight">{{ guest.full_name }}</div>
+    <p class="guest-welcome">nos encantaría que nos acompañes.</p>
+    {% if event_datetime %}
+    <div class="countdown" data-date="{{ event_datetime.isoformat() }}">
+      <div><b data-days>0</b><span>días</span></div>
+      <div><b data-hours>0</b><span>horas</span></div>
+      <div><b data-minutes>0</b><span>minutos</span></div>
+      <div><b data-seconds>0</b><span>segundos</span></div>
+    </div>
+    {% else %}
+    <p class="date-pending">La fecha y hora serán anunciadas muy pronto.</p>
+    {% endif %}
+  </div>
+</section>
+<section class="invite-section">
+  <!-- FECHA DESTACADA Y VISIBLE -->
+  <div class="fecha-destacada">📅 14 de noviembre de 2026</div>
+  <p class="hora-evento">🕔 5:00 p. m.</p>
+  
+  {% if portraits %}
+  <p class="eyebrow">Retratos de nuestro amor</p>
+  <h2>La clave es disfrutar cada momento</h2>
+  <div class="love-carousel" data-carousel>
+    <button class="carousel-button previous" aria-label="Foto anterior">‹</button>
+    <div class="carousel-track">
+      {% for portrait in portraits %}
+      <figure class="carousel-slide">
+        <img src="{{ url_for('web.media', filename=portrait.filename) }}" alt="Retrato {{ loop.index }} de la pareja">
+      </figure>
+      {% endfor %}
+    </div>
+    <button class="carousel-button next" aria-label="Foto siguiente">›</button>
+  </div>
+  <div class="carousel-dots">
+    {% for portrait in portraits %}
+    <button class="{% if loop.first %}active{% endif %}" aria-label="Ver foto {{ loop.index }}"></button>
+    {% endfor %}
+  </div>
+  {% elif wedding.portrait_one or wedding.portrait_two %}
+  <div class="portrait-grid">
+    {% if wedding.portrait_one %}
+    <img src="{{ url_for('web.media', filename=wedding.portrait_one) }}" alt="Retrato de la pareja">
+    {% endif %}
+    {% if wedding.portrait_two %}
+    <img src="{{ url_for('web.media', filename=wedding.portrait_two) }}" alt="Retrato de la pareja">
+    {% endif %}
+  </div>
+  {% endif %}
+  
+  <p class="eyebrow" style="margin-top:1rem;">Celebramos el amor</p>
+  <h2>Una historia que queremos compartir contigo</h2>
+  <p>En un día lleno de alegría, abrazos y recuerdos inolvidables.</p>
+</section>
+<section class="event-grid">
+  <article>
+    <span>01 · 5:00 p. m.</span>
+    <h3>Ceremonia</h3>
+    <strong>{{ wedding.ceremony_name }}</strong>
+    <p>{{ wedding.ceremony_address }}</p>
+    <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ wedding.ceremony_address|urlencode }}">Ver ubicación ↗</a>
+  </article>
+  <article>
+    <span>02 · {{ wedding.reception_time }}</span>
+    <h3>Celebración</h3>
+    <strong>{{ wedding.reception_name }}</strong>
+    <p>{{ wedding.reception_address }}</p>
+    <a target="_blank" href="{{ wedding.reception_maps_url or ('https://www.google.com/maps/search/?api=1&query=' ~ wedding.reception_address|urlencode) }}">Ver ubicación ↗</a>
+  </article>
+</section>
+<section class="invite-section accent">
+  <p class="eyebrow">Código de vestuario</p>
+  <h2>{{ wedding.dress_code or 'Elegancia para celebrar' }}</h2>
+  <p>Queremos que te sientas cómodo y listo para disfrutar cada momento con nosotros.</p>
+</section>
+<section class="invite-section">
+  {% if wedding.gifts_url or wedding.gifts_message or wedding.gift_qr %}
+  <p class="eyebrow">Regalos</p>
+  <h2>Tu presencia es nuestro mejor regalo</h2>
+  <p>{{ wedding.gifts_message or 'Si deseas tener un detalle con nosotros, puedes usar el código QR.' }}</p>
+  {% if wedding.gift_qr %}
+  <img class="gift-qr" src="{{ url_for('web.media', filename=wedding.gift_qr) }}" alt="Código QR para regalo en dinero">
+  <p class="small text-muted">Escanea el código QR con la cámara o aplicación de pagos.</p>
+  {% endif %}
+  {% if wedding.gifts_url %}
+  <a class="gold-button" target="_blank" href="{{ wedding.gifts_url }}">Ver lista de regalos</a>
+  {% endif %}
+  {% endif %}
+</section>
+<section class="invite-section rsvp-box">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% if guest.rsvp_status.value == 'pending' %}
+    <p class="eyebrow">Confirma tu asistencia</p>
+    <h2>¿Nos acompañas?</h2>
+    <p>{% if guest.companions %}Esta invitación incluye {{ guest.companions }} acompañante(s).{% endif %}</p>
+    <form method="post">
+      <button class="gold-button" name="response" value="confirmed">Sí, asistiré</button>
+      <button class="text-button" name="response" value="declined">No podré asistir</button>
+    </form>
+  {% elif guest.rsvp_status.value == 'confirmed' %}
+    <h2>¡Qué alegría!</h2>
+    <div class="rsvp-confirmed">✓ Tu asistencia está confirmada</div>
+  {% else %}
+    <h2>Gracias por responder</h2>
+    <div class="rsvp-declined">Tu respuesta fue registrada</div>
+  {% endif %}
+</section>
+<section class="invite-section">
+  <p class="eyebrow">Recuerdos del gran día</p>
+  <h2>Comparte tu mirada</h2>
+  <p>Sube tus fotos o videos para construir juntos el álbum de nuestra boda.</p>
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('web.upload_memory', code=guest.invitation_code) }}" class="upload-form">
+    <input class="form-control" type="file" name="memory" accept="image/*,video/mp4,video/quicktime,video/webm" required>
+    <button class="gold-button" type="submit">Subir recuerdo</button>
+  </form>
+  {% if memories %}
+  <div class="memory-grid">
+    {% for memory in memories %}
+      {% if memory.media_type == 'image' %}
+        <img src="{{ url_for('web.media', filename=memory.filename) }}" alt="Recuerdo de la boda">
+      {% else %}
+        <video controls preload="metadata">
+          <source src="{{ url_for('web.media', filename=memory.filename) }}">
+        </video>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+</main>
+<script>
+const box=document.querySelector('.countdown');
+if(box){
+  const date=new Date(box.dataset.date);
+  const update=()=>{
+    let n=Math.max(0,date-new Date()),s=Math.floor(n/1000);
+    for(const [key,value] of Object.entries({
+      days:Math.floor(s/86400),
+      hours:Math.floor(s%86400/3600),
+      minutes:Math.floor(s%3600/60),
+      seconds:s%60
+    })){
+      box.querySelector('[data-'+key+']').textContent=String(value).padStart(2,'0')
+    }
+  };
+  update();
+  setInterval(update,1000)
+}
+const carousel=document.querySelector('[data-carousel]');
+if(carousel){
+  const track=carousel.querySelector('.carousel-track'),
+        dots=[...document.querySelectorAll('.carousel-dots button')],
+        slides=[...track.children];
+  let index=0;
+  const show=i=>{
+    index=(i+slides.length)%slides.length;
+    track.scrollTo({left:slides[index].offsetLeft-(track.clientWidth-slides[index].clientWidth)/2,behavior:'smooth'});
+    dots.forEach((d,n)=>d.classList.toggle('active',n===index))
+  };
+  carousel.querySelector('.previous').onclick=()=>show(index-1);
+  carousel.querySelector('.next').onclick=()=>show(index+1);
+  dots.forEach((dot,i)=>dot.onclick=()=>show(i));
+}
+</script>
+</body></html>

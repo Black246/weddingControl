@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Configuración · WeddingControl{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <p class="eyebrow">Personaliza la experiencia</p>
+  <h1>Tu invitación</h1>
+  <p class="text-muted">Los cambios se reflejan en todos los enlaces de invitación.</p>
+</div>
+<form method="post" enctype="multipart/form-data" class="card soft-card">
+  <div class="card-body p-4 p-lg-5">
+    <div class="row g-4">
+      
+      <!-- Información principal -->
+      <div class="col-12">
+        <h5 class="text-muted" style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:0.5rem;">Información principal</h5>
+      </div>
+      <div class="col-md-6"><label class="form-label">Nombre de la boda</label><input class="form-control" name="title" value="{{ wedding.title }}"></div>
+      <div class="col-md-6"><label class="form-label">Nombres de la pareja</label><input class="form-control" name="couple_names" value="{{ wedding.couple_names }}" placeholder="Ej. Laura & Daniel"></div>
+      <div class="col-md-6"><label class="form-label">Fecha y hora de la ceremonia</label><input class="form-control" type="datetime-local" name="event_datetime" value="{{ wedding.event_datetime.strftime('%Y-%m-%dT%H:%M') if wedding.event_datetime else '' }}"></div>
+      <div class="col-md-6"><label class="form-label">Hora de la celebración</label><input class="form-control" name="reception_time" value="{{ wedding.reception_time }}"></div>
+      
+      <!-- Multimedia -->
+      <div class="col-12 mt-3">
+        <h5 class="text-muted" style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:0.5rem;">Multimedia</h5>
+      </div>
+      <div class="col-md-6"><label class="form-label">Video de portada</label><input class="form-control" type="file" name="hero_video" accept="video/mp4,video/quicktime,video/webm">{% if wedding.hero_video %}<small class="text-success">✓ Video actual cargado</small>{% endif %}</div>
+      <div class="col-md-6"><label class="form-label">Dress code</label><input class="form-control" name="dress_code" value="{{ wedding.dress_code or '' }}" placeholder="Ej. Formal elegante"></div>
+      
+      <!-- Lugares -->
+      <div class="col-12 mt-3">
+        <h5 class="text-muted" style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:0.5rem;">Lugares</h5>
+      </div>
+      <div class="col-md-6"><label class="form-label">Lugar de ceremonia</label><input class="form-control" name="ceremony_name" value="{{ wedding.ceremony_name }}"></div>
+      <div class="col-md-6"><label class="form-label">Dirección de ceremonia</label><input class="form-control" name="ceremony_address" value="{{ wedding.ceremony_address }}"></div>
+      <div class="col-md-6"><label class="form-label">Lugar de celebración</label><input class="form-control" name="reception_name" value="{{ wedding.reception_name }}"></div>
+      <div class="col-md-6"><label class="form-label">Dirección de celebración</label><input class="form-control" name="reception_address" value="{{ wedding.reception_address }}"></div>
+      <div class="col-12"><label class="form-label">Enlace exacto de Google Maps</label><input class="form-control" type="url" name="reception_maps_url" value="{{ wedding.reception_maps_url or '' }}" placeholder="https://maps.app.goo.gl/..."></div>
+      
+      <!-- Regalos -->
+      <div class="col-12 mt-3">
+        <h5 class="text-muted" style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:0.5rem;">Regalos</h5>
+      </div>
+      <div class="col-md-6"><label class="form-label">Enlace de lista de regalos</label><input class="form-control" type="url" name="gifts_url" value="{{ wedding.gifts_url or '' }}" placeholder="https://..."></div>
+      <div class="col-md-6"><label class="form-label">Mensaje de regalos</label><input class="form-control" name="gifts_message" value="{{ wedding.gifts_message or '' }}" placeholder="Tu presencia es nuestro mejor regalo."></div>
+      <div class="col-md-6"><label class="form-label">QR para regalo en dinero</label><input class="form-control" type="file" name="gift_qr" accept="image/png,image/jpeg,image/webp">{% if wedding.gift_qr %}<small class="text-success">✓ QR actual cargado</small>{% endif %}</div>
+      
+      <!-- Retratos -->
+      <div class="col-12 mt-3">
+        <h5 class="text-muted" style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:0.5rem;">Retratos</h5>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Subir retratos</label>
+        <input class="form-control" type="file" name="portraits" accept="image/png,image/jpeg,image/webp" multiple>
+        <small class="text-muted">Puedes seleccionar varias fotos a la vez; aparecerán en un carrusel horizontal.</small>
+        {% if wedding.portraits or wedding.portrait_one or wedding.portrait_two %}
+        <div class="admin-portraits mt-3">
+          {% for portrait in wedding.portraits %}
+          <div>
+            <img src="{{ url_for('web.media', filename=portrait.filename) }}" alt="Retrato">
+            <button type="submit" formmethod="post" formaction="{{ url_for('web.delete_portrait', portrait_id=portrait.id) }}" class="btn btn-sm btn-outline-danger" style="font-size:0.7rem;">Eliminar</button>
+          </div>
+          {% endfor %}
+          {% for slot in ['portrait_one', 'portrait_two'] %}
+          {% if wedding|attr(slot) %}
+          <div>
+            <img src="{{ url_for('web.media', filename=wedding|attr(slot)) }}" alt="Retrato">
+            <button type="submit" formmethod="post" formaction="{{ url_for('web.delete_legacy_portrait', slot=slot) }}" class="btn btn-sm btn-outline-danger" style="font-size:0.7rem;">Eliminar</button>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      
+    </div>
+    <button class="btn btn-dark mt-4" style="border-radius:10px;padding:0.7rem 2.5rem;">Guardar cambios</button>
+  </div>
+</form>
+{% endblock %}

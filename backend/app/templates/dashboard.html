@@ -1,0 +1,44 @@
+{% extends 'base.html' %}{% block title %}Panel · WeddingControl{% endblock %}{% block content %}
+<div class="mb-5"><p class="eyebrow">{{ wedding.title }}</p><h1>Todo bajo control.</h1><p class="lead text-muted">Un vistazo a los invitados de tu celebración.</p></div>
+<div class="row g-4">
+    <div class="col-6 col-lg">
+        <article class="stat-card dark">
+        <p>Invitaciones</p>
+        <strong>{{ stats.total }}</strong>
+        </article>
+    </div>
+    <div class="col-6 col-lg">
+        <article class="stat-card gold">
+        <p>Total de personas</p>
+        <strong>{{ stats.total_personas }}</strong>
+        <small style="display:block;font-size:0.7rem;color:#9a7a3d;">Invitados + acompañantes</small>
+        </article>
+    </div>
+    <div class="col-6 col-lg">
+        <article class="stat-card success">
+        <p>Confirmados</p>
+        <strong>{{ stats.confirmed_personas }}</strong>
+        <small style="display:block;font-size:0.7rem;color:#2d8f5e;">de {{ stats.total_personas }}</small>
+        </article>
+    </div>
+    <div class="col-6 col-lg">
+        <article class="stat-card warning">
+        <p>Pendientes</p>
+        <strong>{{ stats.pending_personas }}</strong>
+        </article>
+    </div>
+    <div class="col-6 col-lg">
+        <article class="stat-card danger">
+        <p>No asistirán</p>
+        <strong>{{ stats.declined_personas }}</strong>
+        </article>
+    </div>
+    <div class="col-6 col-lg">
+        <article class="stat-card gold">
+        <p>Mesas ocupadas</p>
+        <strong>{{ stats.tables }}</strong>
+        </article>
+    </div>
+</div>
+<div class="card soft-card mt-5"><div class="card-body p-4"><h2 class="h4">Próximo paso</h2><p class="text-muted">Crea tu lista de invitados. Después añadiremos los enlaces de invitación, RSVP y códigos QR.</p><a href="{{ url_for('web.new_guest') }}" class="btn btn-dark">Agregar invitado</a></div></div>
+{% endblock %}
