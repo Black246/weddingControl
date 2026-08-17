@@ -59,7 +59,7 @@ def create_app():
             organization = Organization(name="Mi boda")
             wedding = Wedding(organization=organization, title="Nuestra boda")
             admin = User(
-                organization=organization,
+                organization_id=organization.id,
                 name="Administrador",
                 email="admin@weddingcontrol.local"
             )
