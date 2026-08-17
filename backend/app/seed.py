@@ -8,10 +8,7 @@ def seed_data():
         return
     organization = Organization(name="Mi boda")
     wedding = Wedding(organization=organization, title="Nuestra boda")
-    admin = User(organization_id=1, name="Administrador", email="admin@weddingcontrol.local")
+    admin = User(organization=organization, name="Administrador", email="admin@weddingcontrol.local")
     admin.set_password("CambiaEstaClave123!")
-    db.session.add_all([organization, wedding])
-    db.session.flush()
-    admin.organization_id = organization.id
-    db.session.add(admin)
+    db.session.add_all([organization, wedding, admin])
     db.session.commit()
