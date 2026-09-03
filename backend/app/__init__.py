@@ -19,6 +19,16 @@ def create_app():
         SECRET_KEY=secret_key,
         SQLALCHEMY_DATABASE_URI=os.getenv("DATABASE_URL", "sqlite:///weddingcontrol.db"),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        SQLALCHEMY_ENGINE_OPTIONS={
+            'pool_pre_ping': True,        # Verifica conexión antes de usarla
+            'pool_recycle': 3600,         # Recicla conexiones cada hora
+            'pool_size': 10,              # Tamaño del pool
+            'max_overflow': 20,           # Conexiones extra
+            'connect_args': {
+                'sslmode': 'require',     # Forzar SSL
+                'connect_timeout': 10     # Timeout de conexión
+            }
+        },
         JWT_SECRET_KEY=os.getenv("JWT_SECRET_KEY"),
         JWT_TOKEN_LOCATION=["cookies"],
         JWT_COOKIE_CSRF_PROTECT=False,
