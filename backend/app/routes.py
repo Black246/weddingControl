@@ -68,10 +68,15 @@ def dashboard():
     confirmed_con_acompanantes = 0
     pending_con_acompanantes = 0
     declined_con_acompanantes = 0
+    total_ninos = 0 
     
     for guest in guests:
-        total_personas = 1 + (guest.companions or 0)
+        # Total de personas: 1 (invitado) + acompañantes + niños
+        total_personas = 1 + (guest.companions or 0) + (guest.children or 0)
         total_con_acompanantes += total_personas
+        
+        # Sumar niños por separado
+        total_ninos += (guest.children or 0)
         
         if guest.rsvp_status == RSVPStatus.CONFIRMED:
             confirmed_con_acompanantes += total_personas
@@ -79,10 +84,23 @@ def dashboard():
             pending_con_acompanantes += total_personas
         elif guest.rsvp_status == RSVPStatus.DECLINED:
             declined_con_acompanantes += total_personas
+            
+    # Últimos 5 invitados para mostrar en el dashboard
+    recientes = guests.order_by(Guest.created_at.desc()).limit(5).all()
+    
+    # Porcentaje de confirmados
+    porcentaje_confirmados = 0
+    if total_con_acompanantes > 0:
+        porcentaje_confirmados = round((confirmed_con_acompanantes / total_con_acompanantes) * 100)
+        
+    
     
     stats = {
         "total": guests.count(),
         "total_personas": total_con_acompanantes,
+        "total_ninos": total_ninos,  # 👈 NUEVO
+        "porcentaje_confirmados": porcentaje_confirmados,  # 👈 NUEVO
+        "recientes": recientes,  # 👈 NUEVO
         "confirmed": guests.filter_by(rsvp_status=RSVPStatus.CONFIRMED).count(),
         "confirmed_personas": confirmed_con_acompanantes,
         "pending": guests.filter_by(rsvp_status=RSVPStatus.PENDING).count(),

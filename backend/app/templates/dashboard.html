@@ -1,44 +1,135 @@
-{% extends 'base.html' %}{% block title %}Panel · WeddingControl{% endblock %}{% block content %}
-<div class="mb-5"><p class="eyebrow">{{ wedding.title }}</p><h1>Todo bajo control.</h1><p class="lead text-muted">Un vistazo a los invitados de tu celebración.</p></div>
+{% extends 'base.html' %}
+
+{% block title %}Panel · WeddingControl{% endblock %}
+
+{% block content %}
+<div class="mb-5">
+    <p class="eyebrow">{{ wedding.title }}</p>
+    <h1>Todo bajo control.</h1>
+    <p class="lead text-muted">Un vistazo a los invitados de tu celebración.</p>
+</div>
+
 <div class="row g-4">
     <div class="col-6 col-lg">
         <article class="stat-card dark">
-        <p>Invitaciones</p>
-        <strong>{{ stats.total }}</strong>
+            <p>Invitaciones</p>
+            <strong>{{ stats.total }}</strong>
         </article>
     </div>
     <div class="col-6 col-lg">
         <article class="stat-card gold">
-        <p>Total de personas</p>
-        <strong>{{ stats.total_personas }}</strong>
-        <small style="display:block;font-size:0.7rem;color:#9a7a3d;">Invitados + acompañantes</small>
+            <p>Total de personas</p>
+            <strong>{{ stats.total_personas }}</strong>
+            <small style="display:block;font-size:0.7rem;color:#9a7a3d;">Invitados + acompañantes</small>
         </article>
     </div>
     <div class="col-6 col-lg">
         <article class="stat-card success">
-        <p>Confirmados</p>
-        <strong>{{ stats.confirmed_personas }}</strong>
-        <small style="display:block;font-size:0.7rem;color:#2d8f5e;">de {{ stats.total_personas }}</small>
+            <p>Confirmados</p>
+            <strong>{{ stats.confirmed_personas }}</strong>
+            <small style="display:block;font-size:0.7rem;color:#2d8f5e;">de {{ stats.total_personas }}</small>
         </article>
     </div>
     <div class="col-6 col-lg">
         <article class="stat-card warning">
-        <p>Pendientes</p>
-        <strong>{{ stats.pending_personas }}</strong>
+            <p>Pendientes</p>
+            <strong>{{ stats.pending_personas }}</strong>
         </article>
     </div>
     <div class="col-6 col-lg">
         <article class="stat-card danger">
-        <p>No asistirán</p>
-        <strong>{{ stats.declined_personas }}</strong>
+            <p>No asistirán</p>
+            <strong>{{ stats.declined_personas }}</strong>
         </article>
     </div>
     <div class="col-6 col-lg">
         <article class="stat-card gold">
-        <p>Mesas ocupadas</p>
-        <strong>{{ stats.tables }}</strong>
+            <p>👶 Niños</p>
+            <strong>{{ stats.total_ninos }}</strong>
+            <small style="display:block;font-size:0.7rem;color:#9a7a3d;">de {{ stats.total_personas }}</small>
         </article>
     </div>
 </div>
-<div class="card soft-card mt-5"><div class="card-body p-4"><h2 class="h4">Próximo paso</h2><p class="text-muted">Crea tu lista de invitados. Después añadiremos los enlaces de invitación, RSVP y códigos QR.</p><a href="{{ url_for('web.new_guest') }}" class="btn btn-dark">Agregar invitado</a></div></div>
+
+<!-- SOLO ESTO SE ELIMINA: "Próximo paso" ya no está -->
+
+<!-- Barra de progreso (opcional - mantén tu diseño) -->
+<div class="card soft-card mt-4">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="fw-semibold">Progreso de confirmaciones</span>
+            <span class="text-muted small">{{ stats.porcentaje_confirmados }}%</span>
+        </div>
+        <div class="progress" style="height: 6px; background: var(--line); border-radius: 99px;">
+            <div class="progress-bar" 
+                    role="progressbar" 
+                    style="width: {{ stats.porcentaje_confirmados }}%; background: var(--gold); border-radius: 99px;"
+                    aria-valuenow="{{ stats.porcentaje_confirmados }}" 
+                    aria-valuemin="0" 
+                    aria-valuemax="100">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Últimos invitados -->
+<div class="card soft-card mt-4">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0">📋 Últimos invitados</h2>
+            <a href="{{ url_for('web.invitados') }}" class="text-decoration-none" style="color: var(--gold);">
+                Ver todos →
+            </a>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-borderless align-middle" style="font-size: 0.9rem;">
+                <thead style="color: #6d685f; border-bottom: 1px solid var(--line);">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Acompañantes</th>
+                        <th>👶 Niños</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invitado in stats.recientes %}
+                    <tr>
+                        <td class="fw-medium">{{ invitado.nombre }}</td>
+                        <td>{{ invitado.acompanantes or 0 }}</td>
+                        <td>{{ invitado.ninos or 0 }}</td>
+                        <td>
+                            {% if invitado.confirmado %}
+                                <span style="background: #e5f3e9; color: #216342; padding: 4px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 500;">
+                                    Confirmado
+                                </span>
+                            {% elif invitado.confirmado == False %}
+                                <span style="background: #f4eeee; color: #824040; padding: 4px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 500;">
+                                    No asiste
+                                </span>
+                            {% else %}
+                                <span style="background: #fdf6e8; color: #b8860b; padding: 4px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 500;">
+                                    Pendiente
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            No hay invitados aún. ¡Agrega tu primer invitado!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-3">
+            <a href="{{ url_for('web.new_guest') }}" class="btn btn-dark">
+                + Agregar invitado
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

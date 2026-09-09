@@ -78,6 +78,7 @@ class Guest(db.Model):
     phone = db.Column(db.String(40))
     email = db.Column(db.String(255))
     companions = db.Column(db.Integer, nullable=False, default=0)
+    children = db.Column(db.Integer, nullable=False, default=0)
     table_number = db.Column(db.String(30))
     rsvp_status = db.Column(db.Enum(RSVPStatus), nullable=False, default=RSVPStatus.PENDING)
     dietary_notes = db.Column(db.String(255))
