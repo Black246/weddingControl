@@ -89,7 +89,15 @@ class Guest(db.Model):
 
     @property
     def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+        """Retorna el nombre completo sin mostrar None."""
+        if self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        return self.first_name
+
+    @property
+    def display_name(self):
+        """Alias para full_name, por si lo usas en otros lugares."""
+        return self.full_name
 
     def ensure_invitation_code(self):
         if not self.invitation_code:
