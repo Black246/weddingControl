@@ -184,7 +184,20 @@
   {% if guest.rsvp_status.value == 'pending' %}
     <p class="eyebrow">Confirma tu asistencia</p>
     <h2>¿Nos acompañas?</h2>
-    <p>{% if guest.companions %}Esta invitación incluye {{ guest.companions }} acompañante(s).{% endif %}</p>
+    <p>
+      {% if '&' in guest.first_name %}
+        👫 Esta invitación es para ti y tu pareja.
+      {% elif guest.companions %}
+        Esta invitación incluye {{ guest.companions }} acompañante(s).
+        {% if guest.children %}
+          👶 Incluye {{ guest.children }} niño(s).
+        {% endif %}
+      {% elif guest.children %}
+        👶 Esta invitación incluye {{ guest.children }} niño(s).
+      {% else %}
+        Esta invitación es individual.
+      {% endif %}
+    </p>
     <form method="post">
       <button class="gold-button" name="response" value="confirmed">Sí, asistiré</button>
       <button class="text-button" name="response" value="declined">No podré asistir</button>
@@ -195,28 +208,6 @@
   {% else %}
     <h2>Gracias por responder</h2>
     <div class="rsvp-declined">Tu respuesta fue registrada</div>
-  {% endif %}
-</section>
-<section class="invite-section">
-  <p class="eyebrow">Recuerdos del gran día</p>
-  <h2>Comparte tu mirada</h2>
-  <p>Sube tus fotos o videos para construir juntos el álbum de nuestra boda.</p>
-  <form method="post" enctype="multipart/form-data" action="{{ url_for('web.upload_memory', code=guest.invitation_code) }}" class="upload-form">
-    <input class="form-control" type="file" name="memory" accept="image/*,video/mp4,video/quicktime,video/webm" required>
-    <button class="gold-button" type="submit">Subir recuerdo</button>
-  </form>
-  {% if memories %}
-  <div class="memory-grid">
-    {% for memory in memories %}
-      {% if memory.media_type == 'image' %}
-        <img src="{{ url_for('web.media', filename=memory.filename) }}" alt="Recuerdo de la boda">
-      {% else %}
-        <video controls preload="metadata">
-          <source src="{{ url_for('web.media', filename=memory.filename) }}">
-        </video>
-      {% endif %}
-    {% endfor %}
-  </div>
   {% endif %}
 </section>
 </main>

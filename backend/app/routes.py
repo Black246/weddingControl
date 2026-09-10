@@ -57,56 +57,59 @@ def logout():
     return response
 
 
+def calcular_personas(guest):
+    """
+    Calcula el número total de personas para un invitado.
+    - Si el nombre contiene '&' → son 2 personas (pareja)
+    - Si no → 1 + acompañantes + niños
+    """
+    if guest.first_name and '&' in guest.first_name:
+        return 2
+    return 1 + (guest.companions or 0) + (guest.children or 0)
+
+
 @web.get("/dashboard")
 @admin_required
 def dashboard():
     wedding = current_wedding()
     guests = Guest.query.filter_by(wedding_id=wedding.id)
     
-    # Conteo total incluyendo acompañantes
-    total_con_acompanantes = 0
-    confirmed_con_acompanantes = 0
-    pending_con_acompanantes = 0
-    declined_con_acompanantes = 0
-    total_ninos = 0 
+    total_personas = 0
+    confirmed_personas = 0
+    pending_personas = 0
+    declined_personas = 0
+    total_ninos = 0
     
     for guest in guests:
-        # Total de personas: 1 (invitado) + acompañantes + niños
-        total_personas = 1 + (guest.companions or 0) + (guest.children or 0)
-        total_con_acompanantes += total_personas
-        
-        # Sumar niños por separado
+        total = calcular_personas(guest)
+        total_personas += total
         total_ninos += (guest.children or 0)
         
         if guest.rsvp_status == RSVPStatus.CONFIRMED:
-            confirmed_con_acompanantes += total_personas
+            confirmed_personas += total
         elif guest.rsvp_status == RSVPStatus.PENDING:
-            pending_con_acompanantes += total_personas
+            pending_personas += total
         elif guest.rsvp_status == RSVPStatus.DECLINED:
-            declined_con_acompanantes += total_personas
-            
-    # Últimos 5 invitados para mostrar en el dashboard
+            declined_personas += total
+    
     recientes = guests.order_by(Guest.created_at.desc()).limit(5).all()
     
-    # Porcentaje de confirmados
     porcentaje_confirmados = 0
-    if total_con_acompanantes > 0:
-        porcentaje_confirmados = round((confirmed_con_acompanantes / total_con_acompanantes) * 100)
-        
-    
+    if total_personas > 0:
+        porcentaje_confirmados = round((confirmed_personas / total_personas) * 100)
     
     stats = {
         "total": guests.count(),
-        "total_personas": total_con_acompanantes,
-        "total_ninos": total_ninos,  # 👈 NUEVO
-        "porcentaje_confirmados": porcentaje_confirmados,  # 👈 NUEVO
-        "recientes": recientes,  # 👈 NUEVO
+        "total_personas": total_personas,
+        "total_ninos": total_ninos,
+        "porcentaje_confirmados": porcentaje_confirmados,
+        "recientes": recientes,
         "confirmed": guests.filter_by(rsvp_status=RSVPStatus.CONFIRMED).count(),
-        "confirmed_personas": confirmed_con_acompanantes,
+        "confirmed_personas": confirmed_personas,
         "pending": guests.filter_by(rsvp_status=RSVPStatus.PENDING).count(),
-        "pending_personas": pending_con_acompanantes,
+        "pending_personas": pending_personas,
         "declined": guests.filter_by(rsvp_status=RSVPStatus.DECLINED).count(),
-        "declined_personas": declined_con_acompanantes,
+        "declined_personas": declined_personas,
         "tables": db.session.query(Guest.table_number).filter_by(wedding_id=wedding.id).filter(Guest.table_number.isnot(None)).distinct().count(),
     }
     return render_template("dashboard.html", wedding=wedding, stats=stats)
@@ -135,6 +138,7 @@ def new_guest():
             phone=request.form.get("phone", "").strip() or None,
             email=request.form.get("email", "").strip() or None,
             companions=max(0, int(request.form.get("companions", 0) or 0)),
+            children=max(0, int(request.form.get("children", 0) or 0)),
             table_number=request.form.get("table_number", "").strip() or None,
             rsvp_status=RSVPStatus(request.form.get("rsvp_status", RSVPStatus.PENDING.value)),
             dietary_notes=request.form.get("dietary_notes", "").strip() or None,
@@ -156,6 +160,7 @@ def edit_guest(guest_id):
         for field in ("first_name", "last_name", "phone", "email", "table_number", "dietary_notes", "notes"):
             setattr(guest, field, request.form.get(field, "").strip() or None)
         guest.companions = max(0, int(request.form.get("companions", 0) or 0))
+        guest.children = max(0, int(request.form.get("children", 0) or 0))
         guest.rsvp_status = RSVPStatus(request.form["rsvp_status"])
         db.session.commit()
         flash("Invitado actualizado.", "success")
@@ -211,8 +216,8 @@ def invitation_qr(guest_id):
 def public_invitation(code):
     guest = Guest.query.filter_by(invitation_code=code.upper()).first_or_404()
     
-    # Fecha fija: 14 de noviembre de 2026 a las 5:00 PM
-    event_datetime = datetime(2026, 11, 14, 17, 0, 0)
+    # Fecha fija: 14 de noviembre de 2026 a las 6:15 PM
+    event_datetime = datetime(2026, 11, 14, 18, 15, 0)
     
     if request.method == "POST":
         response = request.form.get("response")
