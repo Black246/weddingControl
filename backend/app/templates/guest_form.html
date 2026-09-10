@@ -4,7 +4,7 @@
     <div class="col-md-6"><label class="form-label">Nombre</label><input class="form-control" name="first_name" value="{{ guest.first_name if guest else '' }}" required>
         <small class="text-muted">Para parejas usa "&" ej: "Juan & María"</small>
     </div>
-    <div class="col-md-6"><label class="form-label">Apellidos</label><input class="form-control" name="last_name" value="{{ guest.last_name if guest else '' }}" required></div>
+    <div class="col-md-6"><label class="form-label">Apellidos</label><input class="form-control" name="last_name" value="{{ guest.last_name if guest else '' }}" ></div>
     <div class="col-md-6"><label class="form-label">Teléfono</label><input class="form-control" name="phone" value="{{ guest.phone if guest and guest.phone else '' }}"></div>
     <div class="col-md-6"><label class="form-label">Correo</label><input type="email" class="form-control" name="email" value="{{ guest.email if guest and guest.email else '' }}"></div>
     <div class="col-md-4"><label class="form-label">Acompañantes (adultos)</label><input type="number" min="0" class="form-control" name="companions" value="{{ guest.companions if guest else 0 }}"></div>

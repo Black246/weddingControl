@@ -134,7 +134,7 @@ def new_guest():
         guest = Guest(
             wedding_id=wedding.id,
             first_name=request.form["first_name"].strip(),
-            last_name=request.form["last_name"].strip(),
+            last_name=request.form["last_name"].strip() or None,
             phone=request.form.get("phone", "").strip() or None,
             email=request.form.get("email", "").strip() or None,
             companions=max(0, int(request.form.get("companions", 0) or 0)),
