@@ -17,9 +17,9 @@
     <td><small>{{ guest.phone or guest.email or '—' }}</small></td>
     <td>
         {% if '&' in guest.first_name %}
-        2
+            {{ 2 + (guest.children or 0) }}
         {% else %}
-        {{ 1 + (guest.companions or 0) + (guest.children or 0) }}
+            {{ 1 + (guest.companions or 0) + (guest.children or 0) }}
         {% endif %}
     </td>
     <td>{{ guest.table_number or 'Sin asignar' }}</td>
