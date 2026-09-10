@@ -74,7 +74,7 @@ class Guest(db.Model):
     wedding_id = db.Column(db.Integer, db.ForeignKey("weddings.id"), nullable=False, index=True)
     family_id = db.Column(db.Integer, db.ForeignKey("families.id"), nullable=True)
     first_name = db.Column(db.String(100), nullable=False)
-    last_name = db.Column(db.String(100), nullable=False)
+    last_name = db.Column(db.String(100), nullable=True)
     phone = db.Column(db.String(40))
     email = db.Column(db.String(255))
     companions = db.Column(db.Integer, nullable=False, default=0)
