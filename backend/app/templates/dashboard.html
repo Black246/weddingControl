@@ -72,6 +72,52 @@
     </div>
 </div>
 
+<!-- 💌 Recordatorio de fecha límite -->
+<div class="card soft-card mt-4" style="background:linear-gradient(135deg,#fdfaf3,#faf3e3);border:1px solid #e8d5a8;">
+    <div class="card-body p-4 d-flex align-items-center gap-3 flex-wrap">
+        <div style="font-size:2.5rem;line-height:1;">💌</div>
+        <div style="flex:1;min-width:220px;">
+        <p class="eyebrow mb-1" style="margin-bottom:0.3rem;">Fecha límite de confirmación</p>
+        <p class="mb-1" style="font-size:1.15rem;font-weight:700;color:var(--gold-dark);font-family:'Playfair Display',serif;">
+            14 de octubre de 2026
+        </p>
+        <small class="text-muted" style="font-size:0.85rem;">
+            Invita a tus invitados a confirmar antes de esta fecha.
+        </small>
+        </div>
+        <div style="text-align:center;padding:0.5rem 1rem;border-left:1px solid #e8d5a8;">
+        <p class="mb-0" style="font-size:0.7rem;color:#8b5a2b;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;">
+            Tiempo restante
+        </p>
+        <p class="mb-0" style="font-size:1.1rem;font-weight:700;color:var(--gold-dark);">
+            <span id="contador-limite"></span>
+        </p>
+        </div>
+    </div>
+</div>
+
+<script>
+  // Contador de tiempo restante hasta el 14 de octubre de 2026
+(function() {
+    const limite = new Date('2026-10-14T23:59:59');
+    const contador = document.getElementById('contador-limite');
+    if (!contador) return;
+
+    function actualizar() {
+        const ahora = new Date();
+        const diff = limite - ahora;
+        if (diff <= 0) {
+            contador.textContent = 'Finalizado';
+            return;
+        }
+      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+        contador.textContent = dias + ' días';
+    }
+    actualizar();
+    setInterval(actualizar, 60000);
+    })();
+</script>
+
 <!-- Últimos invitados -->
 <div class="card soft-card mt-4">
     <div class="card-body p-4">
@@ -95,15 +141,20 @@
                 <tbody>
                     {% for invitado in stats.recientes %}
                     <tr>
-                        <td class="fw-medium">{{ invitado.nombre }}</td>
-                        <td>{{ invitado.acompanantes or 0 }}</td>
-                        <td>{{ invitado.ninos or 0 }}</td>
+                        <td class="fw-medium">
+                            {{ invitado.full_name }}
+                            {% if '&' in invitado.first_name %}
+                                <small class="d-block text-muted" style="font-size:0.75rem;">👫 Pareja</small>
+                            {% endif %}
+                        </td>
+                        <td>{{ invitado.companions or 0 }}</td>
+                        <td>{{ invitado.children or 0 }}</td>
                         <td>
-                            {% if invitado.confirmado %}
+                            {% if invitado.rsvp_status.value == 'confirmed' %}
                                 <span style="background: #e5f3e9; color: #216342; padding: 4px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 500;">
                                     Confirmado
                                 </span>
-                            {% elif invitado.confirmado == False %}
+                            {% elif invitado.rsvp_status.value == 'declined' %}
                                 <span style="background: #f4eeee; color: #824040; padding: 4px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: 500;">
                                     No asiste
                                 </span>

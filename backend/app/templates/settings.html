@@ -25,7 +25,7 @@
       </div>
       <div class="col-md-6"><label class="form-label">Video de portada</label><input class="form-control" type="file" name="hero_video" accept="video/mp4,video/quicktime,video/webm">{% if wedding.hero_video %}<small class="text-success">✓ Video actual cargado</small>{% endif %}</div>
       <div class="col-md-6"><label class="form-label">Dress code</label><input class="form-control" name="dress_code" value="{{ wedding.dress_code or '' }}" placeholder="Ej. Formal elegante"></div>
-      
+      <div class="col-md-6"><label class="form-label">Imagen de dress code</label><input class="form-control" type="file" name="dress_code_image" accept="image/png,image/jpeg,image/webp">{% if wedding.dress_code_image %}<small class="text-success">✓ Imagen actual cargada</small>{% endif %}</div>
       <!-- Lugares -->
       <div class="col-12 mt-3">
         <h5 class="text-muted" style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:0.5rem;">Lugares</h5>
@@ -43,6 +43,7 @@
       <div class="col-md-6"><label class="form-label">Enlace de lista de regalos</label><input class="form-control" type="url" name="gifts_url" value="{{ wedding.gifts_url or '' }}" placeholder="https://..."></div>
       <div class="col-md-6"><label class="form-label">Mensaje de regalos</label><input class="form-control" name="gifts_message" value="{{ wedding.gifts_message or '' }}" placeholder="Tu presencia es nuestro mejor regalo."></div>
       <div class="col-md-6"><label class="form-label">QR para regalo en dinero</label><input class="form-control" type="file" name="gift_qr" accept="image/png,image/jpeg,image/webp">{% if wedding.gift_qr %}<small class="text-success">✓ QR actual cargado</small>{% endif %}</div>
+      <div class="col-md-6"><label class="form-label">Clave de Nequi</label><input class="form-control" name="nequi_key" value="{{ wedding.nequi_key or '' }}" placeholder="Ej. @3006821597"></div>
       
       <!-- Retratos -->
       <div class="col-12 mt-3">

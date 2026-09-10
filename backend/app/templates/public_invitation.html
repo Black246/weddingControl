@@ -159,17 +159,33 @@
 <section class="invite-section accent">
   <p class="eyebrow">Código de vestuario</p>
   <h2>{{ wedding.dress_code or 'Elegancia para celebrar' }}</h2>
-  <p>Queremos que te sientas cómodo y listo para disfrutar cada momento con nosotros.</p>
+  {% if wedding.dress_code_image %}
+    <img src="{{ url_for('web.media', filename=wedding.dress_code_image) }}" 
+          alt="Código de vestimenta" 
+          style="width:100%;max-width:600px;border-radius:12px;margin:1.5rem auto;display:block;box-shadow:0 8px 32px rgba(30,27,24,0.08);">
+  {% else %}
+    <p>Queremos que te sientas cómodo y listo para disfrutar cada momento con nosotros.</p>
+  {% endif %}
 </section>
 <section class="invite-section">
-  {% if wedding.gifts_url or wedding.gifts_message or wedding.gift_qr %}
+  {% if wedding.gifts_url or wedding.gifts_message or wedding.gift_qr or wedding.nequi_key %}
   <p class="eyebrow">Regalos</p>
   <h2>Tu presencia es nuestro mejor regalo</h2>
-  <p>{{ wedding.gifts_message or 'Si deseas tener un detalle con nosotros, puedes usar el código QR.' }}</p>
+  <p>{{ wedding.gifts_message or 'Si deseas tener un detalle con nosotros, puedes usar:' }}</p>
+
+  {% if wedding.nequi_key %}
+  <div style="background:#f8f5ef;border-radius:16px;padding:1.5rem;margin:1.5rem auto;max-width:400px;border:1px solid #e9e3d9;">
+    <p style="margin:0 0 0.5rem;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);font-weight:600;">Nequi</p>
+    <p style="margin:0;font-size:1.5rem;font-weight:700;color:var(--ink);letter-spacing:0.05em;">{{ wedding.nequi_key }}</p>
+    <p style="margin:0.5rem 0 0;font-size:0.85rem;color:#6d685f;">Llave Nequi</p>
+  </div>
+  {% endif %}
+
   {% if wedding.gift_qr %}
   <img class="gift-qr" src="{{ url_for('web.media', filename=wedding.gift_qr) }}" alt="Código QR para regalo en dinero">
-  <p class="small text-muted">Escanea el código QR con la cámara o aplicación de pagos.</p>
+  <p class="small text-muted">Escanea el código QR con tu aplicación de pagos.</p>
   {% endif %}
+
   {% if wedding.gifts_url %}
   <a class="gold-button" target="_blank" href="{{ wedding.gifts_url }}">Ver lista de regalos</a>
   {% endif %}
@@ -198,6 +214,21 @@
         Esta invitación es individual.
       {% endif %}
     </p>
+
+    <!-- 💌 NOTA ELEGANTE DE CONFIRMACIÓN -->
+    <div class="nota-confirmacion">
+      <div class="nota-confirmacion-icono">💌</div>
+      <h3 class="nota-confirmacion-titulo">Tu respuesta es muy importante</h3>
+      <p class="nota-confirmacion-texto">
+        Para nosotros es fundamental saber si podrás acompañarnos en este día tan especial. 
+        Te pedimos confirmar tu asistencia <strong>antes del 14 de octubre de 2026</strong>.
+      </p>
+      <div class="nota-confirmacion-divisor"></div>
+      <p class="nota-confirmacion-aviso">
+        Pasada esta fecha, lamentablemente no podremos incluirte en la celebración.
+      </p>
+    </div>
+
     <form method="post">
       <button class="gold-button" name="response" value="confirmed">Sí, asistiré</button>
       <button class="text-button" name="response" value="declined">No podré asistir</button>
@@ -205,9 +236,15 @@
   {% elif guest.rsvp_status.value == 'confirmed' %}
     <h2>¡Qué alegría!</h2>
     <div class="rsvp-confirmed">✓ Tu asistencia está confirmada</div>
+    <p class="mt-3 text-muted" style="font-size:0.9rem;">
+      Te esperamos el <strong>14 de noviembre de 2026</strong> a las <strong>6:15 p. m.</strong>
+    </p>
   {% else %}
     <h2>Gracias por responder</h2>
     <div class="rsvp-declined">Tu respuesta fue registrada</div>
+    <p class="mt-3 text-muted" style="font-size:0.9rem;">
+      Lamentamos que no puedas acompañarnos, te vamos a extrañar. 🤍
+    </p>
   {% endif %}
 </section>
 </main>

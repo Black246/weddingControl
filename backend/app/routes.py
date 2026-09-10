@@ -259,11 +259,11 @@ def save_upload(file, allowed_extensions):
 def settings():
     wedding = current_wedding()
     if request.method == "POST":
-        for field in ("title", "couple_names", "ceremony_name", "ceremony_address", "reception_name", "reception_address", "reception_time", "reception_maps_url", "dress_code", "gifts_url", "gifts_message"):
+        for field in ("title", "couple_names", "ceremony_name", "ceremony_address", "reception_name", "reception_address", "reception_time", "reception_maps_url", "dress_code", "gifts_url", "gifts_message", "nequi_key"):
             setattr(wedding, field, request.form.get(field, "").strip() or None)
         raw_datetime = request.form.get("event_datetime", "")
         wedding.event_datetime = datetime.fromisoformat(raw_datetime) if raw_datetime else None
-        for field in ("portrait_one", "portrait_two", "gift_qr"):
+        for field in ("portrait_one", "portrait_two", "gift_qr", "dress_code_image"):
             file = request.files.get(field)
             if file and file.filename:
                 filename = save_upload(file, ALLOWED_IMAGES)
