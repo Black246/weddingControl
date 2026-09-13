@@ -289,26 +289,40 @@ if(carousel){
     <source src="{{ url_for('web.media', filename=wedding.hero_music) }}" type="audio/mpeg">
 </audio>
 
-<button id="music-toggle" aria-label="Música" style="
+<button id="music-toggle" aria-label="Reproducir música" style="
     position: fixed;
     bottom: 24px;
     right: 24px;
     z-index: 9999;
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     border: 1px solid rgba(183, 144, 75, 0.4);
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(8px);
-    box-shadow: 0 8px 32px rgba(30, 27, 24, 0.18);
+    box-shadow: 0 8px 32px rgba(30, 27, 24, 0.2);
     cursor: pointer;
-    font-size: 1.2rem;
-    display: none;
+    font-size: 1.4rem;
+    display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
     color: var(--gold-dark);
-">🔊</button>
+    animation: pulsoMusica 2s ease-in-out infinite;
+">🎵</button>
+
+<style>
+@keyframes pulsoMusica {
+    0%, 100% { 
+        transform: scale(1); 
+        box-shadow: 0 8px 32px rgba(30, 27, 24, 0.2);
+    }
+    50% { 
+        transform: scale(1.08); 
+        box-shadow: 0 12px 40px rgba(183, 144, 75, 0.4);
+    }
+}
+</style>
 
 <script>
 (function() {
@@ -316,51 +330,57 @@ if(carousel){
     const toggle = document.getElementById('music-toggle');
     if (!music || !toggle) return;
 
-    let musicStarted = false;
     let isPlaying = false;
-
-    // Volumen suave (0.3 = 30%)
     music.volume = 0.3;
 
-    function startMusic() {
-        if (musicStarted) return;
+    // Función para reproducir
+    function playMusic() {
         music.play().then(() => {
-            musicStarted = true;
             isPlaying = true;
-            toggle.style.display = 'flex';
             toggle.textContent = '🔊';
+            toggle.setAttribute('aria-label', 'Pausar música');
+            toggle.style.animation = 'none';
         }).catch(err => {
-            console.log('Autoplay bloqueado:', err);
+            console.log('Reproducción bloqueada:', err);
         });
     }
 
-    // 🎯 Detectar CUALQUIER interacción: click, scroll, touch, tecla, movimiento
-    const eventos = ['click', 'touchstart', 'keydown', 'scroll', 'mousemove', 'wheel'];
-    eventos.forEach(evento => {
-        document.addEventListener(evento, startMusic, { once: true, passive: true });
-    });
+    // Función para pausar
+    function pauseMusic() {
+        music.pause();
+        isPlaying = false;
+        toggle.textContent = '🎵';
+        toggle.setAttribute('aria-label', 'Reproducir música');
+        toggle.style.animation = 'pulsoMusica 2s ease-in-out infinite';
+    }
 
-    // Botón para pausar/reanudar
+    // 🎯 El botón es el disparador principal (funciona siempre en móvil)
     toggle.addEventListener('click', (e) => {
         e.stopPropagation();
         if (isPlaying) {
-            music.pause();
-            isPlaying = false;
-            toggle.textContent = '🔇';
+            pauseMusic();
         } else {
-            music.play();
-            isPlaying = true;
-            toggle.textContent = '🔊';
+            playMusic();
         }
     });
 
+    // En escritorio, intentar autoplay al primer scroll/clic (opcional)
+    if (!('ontouchstart' in window)) {
+        const eventos = ['click', 'scroll', 'mousemove'];
+        eventos.forEach(evento => {
+            document.addEventListener(evento, function autostart() {
+                if (!isPlaying) playMusic();
+                eventos.forEach(ev => document.removeEventListener(ev, autostart));
+            }, { passive: true });
+        });
+    }
+
+    // Efecto hover (solo en escritorio)
     toggle.addEventListener('mouseenter', () => {
-        toggle.style.transform = 'scale(1.1)';
         toggle.style.background = '#ffffff';
     });
     toggle.addEventListener('mouseleave', () => {
-        toggle.style.transform = 'scale(1)';
-        toggle.style.background = 'rgba(255, 255, 255, 0.92)';
+        toggle.style.background = 'rgba(255, 255, 255, 0.95)';
     });
 })();
 </script>
