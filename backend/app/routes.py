@@ -243,6 +243,7 @@ def public_invitation(code):
 
 ALLOWED_IMAGES = {"jpg", "jpeg", "png", "webp"}
 ALLOWED_VIDEOS = {"mp4", "mov", "webm"}
+ALLOWED_AUDIOS = {"mp3", "ogg", "wav", "m4a"}
 
 
 def save_upload(file, allowed_extensions):
@@ -263,6 +264,8 @@ def settings():
             setattr(wedding, field, request.form.get(field, "").strip() or None)
         raw_datetime = request.form.get("event_datetime", "")
         wedding.event_datetime = datetime.fromisoformat(raw_datetime) if raw_datetime else None
+        
+        # Imagenes
         for field in ("portrait_one", "portrait_two", "gift_qr", "dress_code_image"):
             file = request.files.get(field)
             if file and file.filename:
@@ -272,6 +275,8 @@ def settings():
                 else:
                     flash("Las imágenes deben ser JPG, PNG o WEBP.", "danger")
                     return redirect(url_for("web.settings"))
+                
+        # Videos
         video = request.files.get("hero_video")
         if video and video.filename:
             filename = save_upload(video, ALLOWED_VIDEOS)
@@ -279,6 +284,16 @@ def settings():
                 flash("El video debe ser MP4, MOV o WEBM.", "danger")
                 return redirect(url_for("web.settings"))
             wedding.hero_video = filename
+            
+        # Musica
+        music = request.files.get("hero_music")
+        if music and music.filename:
+            filename = save_upload(music, ALLOWED_AUDIOS)
+            if not filename:
+                flash("La música debe ser MP3, OGG o WAV.", "danger")
+                return redirect(url_for("web.settings"))
+            wedding.hero_music = filename
+            
         for file in request.files.getlist("portraits"):
             if file and file.filename:
                 filename = save_upload(file, ALLOWED_IMAGES)

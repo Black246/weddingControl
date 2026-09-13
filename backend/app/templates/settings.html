@@ -24,6 +24,7 @@
         <h5 class="text-muted" style="font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:0.5rem;">Multimedia</h5>
       </div>
       <div class="col-md-6"><label class="form-label">Video de portada</label><input class="form-control" type="file" name="hero_video" accept="video/mp4,video/quicktime,video/webm">{% if wedding.hero_video %}<small class="text-success">✓ Video actual cargado</small>{% endif %}</div>
+      <div class="col-md-6"><label class="form-label">Música de portada</label><input class="form-control" type="file" name="hero_music" accept=".mp3,.ogg,.wav,.m4a,audio/mpeg,audio/ogg,audio/wav,audio/mp4">{% if wedding.hero_music %}<small class="text-success">✓ Música actual cargada</small>{% endif %}</div>
       <div class="col-md-6"><label class="form-label">Dress code</label><input class="form-control" name="dress_code" value="{{ wedding.dress_code or '' }}" placeholder="Ej. Formal elegante"></div>
       <div class="col-md-6"><label class="form-label">Imagen de dress code</label><input class="form-control" type="file" name="dress_code_image" accept="image/png,image/jpeg,image/webp">{% if wedding.dress_code_image %}<small class="text-success">✓ Imagen actual cargada</small>{% endif %}</div>
       <!-- Lugares -->

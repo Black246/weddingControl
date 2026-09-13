@@ -43,6 +43,7 @@ class Wedding(db.Model):
     portrait_one = db.Column(db.String(255), nullable=True)
     portrait_two = db.Column(db.String(255), nullable=True)
     hero_video = db.Column(db.String(255), nullable=True)
+    hero_music = db.Column(db.String(255), nullable=True)
     guests = db.relationship("Guest", backref="wedding", lazy=True, cascade="all, delete-orphan")
     memories = db.relationship("Memory", backref="wedding", lazy=True, cascade="all, delete-orphan")
     portraits = db.relationship("Portrait", backref="wedding", lazy=True, cascade="all, delete-orphan", order_by="Portrait.position")

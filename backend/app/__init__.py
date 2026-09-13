@@ -33,7 +33,7 @@ def create_app():
         JWT_TOKEN_LOCATION=["cookies"],
         JWT_COOKIE_CSRF_PROTECT=False,
         JWT_COOKIE_SECURE=os.getenv("JWT_COOKIE_SECURE", "False").lower() == "true",
-        UPLOAD_FOLDER=os.path.join(app.root_path, "uploads"),
+        UPLOAD_FOLDER=os.getenv("UPLOAD_FOLDER", os.path.join(app.root_path, "uploads")),
         MAX_CONTENT_LENGTH=30 * 1024 * 1024,
     )
 
@@ -105,6 +105,7 @@ def create_app():
                     "portrait_one": "VARCHAR(255)", 
                     "portrait_two": "VARCHAR(255)",
                     "hero_video": "VARCHAR(255)",
+                    "hero_music": "VARCHAR(255)",
                 }
                 for name, definition in additions.items():
                     if name not in wedding_columns:
