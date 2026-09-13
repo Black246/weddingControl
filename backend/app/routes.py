@@ -60,13 +60,14 @@ def logout():
 def calcular_personas(guest):
     """
     Calcula el número total de personas para un invitado.
-    - Si el nombre contiene '&' → 2 personas (pareja) + niños
+    - Si el nombre contiene '&' → 2 personas (pareja) + acompañantes + niños
     - Si no → 1 + acompañantes + niños
     """
     ninos = guest.children or 0
+    acomp = guest.companions or 0
     if guest.first_name and '&' in guest.first_name:
-        return 2 + ninos
-    return 1 + (guest.companions or 0) + ninos
+        return 2 + acomp + ninos  # 👈 CAMBIO: incluye acompañantes
+    return 1 + acomp + ninos
 
 
 @web.get("/dashboard")

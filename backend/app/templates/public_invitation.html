@@ -201,15 +201,22 @@
     <p class="eyebrow">Confirma tu asistencia</p>
     <h2>¿Nos acompañas?</h2>
     <p>
-      {% if '&' in guest.first_name %}
+      {% set es_pareja = '&' in guest.first_name %}
+      {% set num_acompanantes = guest.companions or 0 %}
+      {% set num_ninos = guest.children or 0 %}
+      
+      {% if es_pareja and (num_acompanantes > 0 or num_ninos > 0) %}
+        👫 Esta invitación es para ti y tu pareja
+        {% if num_acompanantes > 0 %} + {{ num_acompanantes }} acompañante(s){% endif %}
+        {% if num_ninos > 0 %} + {{ num_ninos }} niño(s){% endif %}.
+      {% elif es_pareja %}
         👫 Esta invitación es para ti y tu pareja.
-      {% elif guest.companions %}
-        Esta invitación incluye {{ guest.companions }} acompañante(s).
-        {% if guest.children %}
-          👶 Incluye {{ guest.children }} niño(s).
-        {% endif %}
-      {% elif guest.children %}
-        👶 Esta invitación incluye {{ guest.children }} niño(s).
+      {% elif num_acompanantes > 0 and num_ninos > 0 %}
+        Esta invitación incluye {{ num_acompanantes }} acompañante(s) y {{ num_ninos }} niño(s).
+      {% elif num_acompanantes > 0 %}
+        Esta invitación incluye {{ num_acompanantes }} acompañante(s).
+      {% elif num_ninos > 0 %}
+        👶 Esta invitación incluye {{ num_ninos }} niño(s).
       {% else %}
         Esta invitación es individual.
       {% endif %}
