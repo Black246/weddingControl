@@ -318,6 +318,8 @@ if(carousel){
 
     let musicStarted = false;
     let isPlaying = false;
+
+    // Volumen suave (0.3 = 30%)
     music.volume = 0.3;
 
     function startMusic() {
@@ -327,13 +329,18 @@ if(carousel){
             isPlaying = true;
             toggle.style.display = 'flex';
             toggle.textContent = '🔊';
-        }).catch(err => console.log('Autoplay bloqueado:', err));
+        }).catch(err => {
+            console.log('Autoplay bloqueado:', err);
+        });
     }
 
-    ['click', 'touchstart', 'keydown', 'scroll'].forEach(evento => {
+    // 🎯 Detectar CUALQUIER interacción: click, scroll, touch, tecla, movimiento
+    const eventos = ['click', 'touchstart', 'keydown', 'scroll', 'mousemove', 'wheel'];
+    eventos.forEach(evento => {
         document.addEventListener(evento, startMusic, { once: true, passive: true });
     });
 
+    // Botón para pausar/reanudar
     toggle.addEventListener('click', (e) => {
         e.stopPropagation();
         if (isPlaying) {
@@ -345,6 +352,15 @@ if(carousel){
             isPlaying = true;
             toggle.textContent = '🔊';
         }
+    });
+
+    toggle.addEventListener('mouseenter', () => {
+        toggle.style.transform = 'scale(1.1)';
+        toggle.style.background = '#ffffff';
+    });
+    toggle.addEventListener('mouseleave', () => {
+        toggle.style.transform = 'scale(1)';
+        toggle.style.background = 'rgba(255, 255, 255, 0.92)';
     });
 })();
 </script>
