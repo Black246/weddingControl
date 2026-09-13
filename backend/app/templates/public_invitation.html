@@ -331,9 +331,12 @@ if(carousel){
     if (!music || !toggle) return;
 
     let isPlaying = false;
+    let autoplayIntentado = false;
+
+    // Volumen suave
     music.volume = 0.3;
 
-    // Función para reproducir
+    // 🎯 Función para iniciar la música
     function playMusic() {
         music.play().then(() => {
             isPlaying = true;
@@ -354,9 +357,37 @@ if(carousel){
         toggle.style.animation = 'pulsoMusica 2s ease-in-out infinite';
     }
 
-    // 🎯 El botón es el disparador principal (funciona siempre en móvil)
+    // ============================================
+    // 🎯 FORMA 1: Autoplay con cualquier interacción
+    // ============================================
+    function intentarAutoplay() {
+        if (autoplayIntentado || isPlaying) return;
+        autoplayIntentado = true;
+        music.play().then(() => {
+            isPlaying = true;
+            toggle.textContent = '🔊';
+            toggle.setAttribute('aria-label', 'Pausar música');
+            toggle.style.animation = 'none';
+        }).catch(err => {
+            // Si falla (típico en móvil), no pasa nada — el botón sigue disponible
+            autoplayIntentado = false;
+            console.log('Autoplay bloqueado, usa el botón 🎵');
+        });
+    }
+
+    // Eventos que intentan iniciar la música automáticamente
+    const eventos = ['click', 'touchstart', 'keydown', 'scroll', 'wheel', 'mousemove'];
+    eventos.forEach(evento => {
+        document.addEventListener(evento, intentarAutoplay, { once: true, passive: true });
+    });
+
+    // ============================================
+    // 🎯 FORMA 2: Botón flotante (control manual)
+    // ============================================
     toggle.addEventListener('click', (e) => {
         e.stopPropagation();
+        e.preventDefault();
+        
         if (isPlaying) {
             pauseMusic();
         } else {
@@ -364,23 +395,31 @@ if(carousel){
         }
     });
 
-    // En escritorio, intentar autoplay al primer scroll/clic (opcional)
-    if (!('ontouchstart' in window)) {
-        const eventos = ['click', 'scroll', 'mousemove'];
-        eventos.forEach(evento => {
-            document.addEventListener(evento, function autostart() {
-                if (!isPlaying) playMusic();
-                eventos.forEach(ev => document.removeEventListener(ev, autostart));
-            }, { passive: true });
-        });
-    }
-
-    // Efecto hover (solo en escritorio)
+    // Efecto hover (escritorio)
     toggle.addEventListener('mouseenter', () => {
         toggle.style.background = '#ffffff';
+        toggle.style.transform = 'scale(1.1)';
     });
     toggle.addEventListener('mouseleave', () => {
         toggle.style.background = 'rgba(255, 255, 255, 0.95)';
+        if (isPlaying) {
+            toggle.style.transform = 'scale(1)';
+        }
+    });
+
+    // ============================================
+    // 🎵 Sincronizar estado si el audio se pausa por el navegador
+    // ============================================
+    music.addEventListener('play', () => {
+        isPlaying = true;
+        toggle.textContent = '🔊';
+        toggle.style.animation = 'none';
+    });
+
+    music.addEventListener('pause', () => {
+        isPlaying = false;
+        toggle.textContent = '🎵';
+        toggle.style.animation = 'pulsoMusica 2s ease-in-out infinite';
     });
 })();
 </script>
